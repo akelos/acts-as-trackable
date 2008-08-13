@@ -1,0 +1,66 @@
+Acts as Trackable Plugin
+===================================
+This plugin allows you to track any kind of activity related to your object.
+
+Tracking login activity into a backend:
+
+define the act in your model:
+
+class User extends ActiveRecord
+{
+
+    var $acts_as = array('trackable'=>array('login'=>
+                                  array('action'=>'User "%user" logged into "%item" from IP "%subject"')));
+                                  
+    function get_tracking_description()
+    {
+        return $this->username;
+    }
+}
+
+and start tracking:
+
+$activity = $user->track('login','backoffice',$this->Request->getIp());
+
+$activity->getDescription(); // User "administrator" logged into "backoffice" from IP "127.0.0.1"
+
+
+
+Installation
+--------------------------------
+
+    ./script/plugin install acts_as_trackable
+
+The Installer will add some new methods to the app/shared_model.php.
+Please do not modify them, they are marked with
+
+/** AUTOMATED START: &track */
+function &track($activityName, &$item, $subject)
+{
+.....
+}
+/** AUTOMATED END: &track */
+
+
+Defining trackable activities
+----------------------------------
+
+define as many activities as you like as follows:
+
+var $acts_as = array('trackable'=>array('activity1','activity2',...,'activityN'));
+
+Each activity can have configuration options:
+
+$default_options = array('table_name'=>'activities', // table can be changed to separate activity storage !!! YOU need to create the table manually
+                         'visibility'=>'public', // can be used to filter activities
+                         'action'=>'%actor executed activity "%actionName" on %item',
+                         'destroy'=>true); // if set to true, all activities will be destroyed if the actor is destroyed
+                         
+
+See test/unit/lib/ActsAsTrackable.php for usage info.
+
+Future
+--------
+
+See TODO file to know what will be implemented into future versions of this plugin.
+
